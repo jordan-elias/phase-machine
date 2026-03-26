@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase Machine — Steve Reich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F1C6D3;--text:#20269D;--accent-hover:#FF6F91;--border:rgba(32,38,157,0.25)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.page{max-width:800px;margin:0 auto;padding:0 1.5rem}
+
+header{padding:2.5rem 0 1.5rem;border-bottom:1px solid var(--text);margin-bottom:2rem}
+header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:500;letter-spacing:-0.01em;line-height:1.15;margin-bottom:0.4rem}
+.header-sub{font-size:0.9rem;opacity:0.6}
+.header-sub a{color:var(--text);text-decoration:underline}
+.header-sub a:hover{color:var(--accent-hover)}
+
+footer{border-top:1px solid var(--border);padding:1.5rem 0 2.5rem;margin-top:3rem;font-size:0.8rem;opacity:0.5}
+footer a{color:var(--text);text-decoration:underline}
+
+.card{border:1px solid var(--text);padding:1.5rem;margin-bottom:1.5rem}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text);opacity:0.5;margin:0 0 1.25rem}
+
+/* Tape display */
+.tape-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25em}
+.tape-card{border:1px solid var(--text);padding:1em}
+.tape-lbl{font-family:'Space Grotesk',sans-serif;font-size:0.72rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);opacity:0.5;margin-bottom:0.75em}
+.tape-pos{font-family:'Courier New',monospace;font-size:1rem;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}
+.tape-rate{font-family:'Inter',sans-serif;font-size:0.72rem;color:var(--text);opacity:0.5;margin-top:3px}
+
+/* Phase bar */
+.phase-row{display:flex;align-items:center;gap:12px;margin-bottom:1.25em}
+.phase-bar-wrap{flex:1;height:6px;background:rgba(32,38,157,0.1);position:relative}
+.phase-bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--text);width:0%;transition:width 0.06s linear}
+.phase-meta{font-family:'Courier New',monospace;font-size:0.82rem;color:var(--text);opacity:0.7;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:72px}
+
+/* Buttons */
+.btn{font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:500;background:transparent;color:var(--text);border:2px solid var(--text);padding:0.5em 1.2em;cursor:pointer;white-space:nowrap;min-width:90px;text-align:center;display:inline-block;border-radius:0;transition:background-color 0.15s,color 0.15s,border-color 0.15s}
+.btn:hover{background:var(--accent-hover);color:var(--bg);border-color:var(--accent-hover)}
+.btn.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.on:hover{background:var(--accent-hover);color:var(--bg);border-color:var(--accent-hover)}
+.btn:disabled{opacity:0.3;cursor:not-allowed;pointer-events:none}
+
+.pill{font-family:'Inter',sans-serif;font-size:0.78rem;background:transparent;color:var(--text);border:1px solid var(--text);padding:3px 12px;border-radius:0;cursor:pointer;transition:background-color 0.15s,color 0.15s,border-color 0.15s}
+.pill:hover{background:var(--accent-hover);color:var(--bg);border-color:var(--accent-hover)}
+.pill.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.pill.on:hover{background:var(--accent-hover);color:var(--bg);border-color:var(--accent-hover)}
+
+.upload-lbl{font-family:'Inter',sans-serif;font-size:0.78rem;background:transparent;color:var(--text);border:1px solid var(--text);padding:3px 12px;cursor:pointer;display:inline-block;transition:background-color 0.15s,color 0.15s,border-color 0.15s}
+.upload-lbl:hover{background:var(--accent-hover);color:var(--bg);border-color:var(--accent-hover)}
+.upload-lbl.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+#pm-file{display:none}
+
+/* Rows & sliders */
+.row{display:flex;align-items:center;gap:8px;margin-bottom:1em;flex-wrap:wrap}
+.row-lbl{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);opacity:0.5;margin-right:4px;white-space:nowrap}
+.rec-state{font-family:'Inter',sans-serif;font-size:0.78rem;color:var(--text);opacity:0.7;padding:3px 0}
+
+.sliders{display:flex;flex-direction:row;gap:24px;margin-bottom:1.25em}
+.ctrl{flex:1;display:flex;flex-direction:column;gap:6px}
+.ctrl input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:2px;background:var(--text);outline:none;cursor:pointer;opacity:0.5}
+.ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--text);cursor:pointer}
+.ctrl input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--text);border:none;cursor:pointer}
+.ctrl-bot{display:flex;justify-content:space-between;align-items:baseline}
+.ctrl-lbl{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);opacity:0.5}
+.ctrl-val{font-family:'Inter',sans-serif;font-size:0.75rem;color:var(--text);opacity:0.7}
+
+/* Sync key */
+.sync-row{display:flex;align-items:center;gap:10px;margin-bottom:1em;flex-wrap:wrap}
+.sync-badge{font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:500;border:2px solid var(--text);padding:0.3em 0.8em;letter-spacing:0.05em;user-select:none;cursor:pointer;transition:background-color 0.08s,color 0.08s}
+.sync-badge.synced{background:var(--text);color:var(--bg)}
+.sync-desc{font-family:'Inter',sans-serif;font-size:0.78rem;color:var(--text);opacity:0.5}
+
+.hint{font-family:'Inter',sans-serif;font-size:0.8rem;color:var(--text);opacity:0.5;margin-top:1em;text-align:center}
+
+/* Loop length */
+.loop-info{font-family:'Courier New',monospace;font-size:0.8rem;color:var(--text);opacity:0.55;margin-bottom:1em}
+
+/* Instructions */
+.instructions{font-size:0.9rem;line-height:1.75;color:var(--text);opacity:0.85}
+.instructions h2{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:500;letter-spacing:-0.01em;margin:1.5rem 0 0.4rem;opacity:1}
+.instructions h2:first-child{margin-top:0}
+.instructions a{color:var(--text);text-decoration:underline}
+.instructions a:hover{color:var(--accent-hover)}
+
+@media(max-width:600px){
+  .tape-grid{grid-template-columns:1fr}
+  .sliders{flex-direction:column;gap:16px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Phase Machine</h1>
+  <p class="header-sub">Inspired by Steve Reich's tape compositions &nbsp;·&nbsp; <a href="https://www.jordanelias.de/blog/phase-machine/" target="_blank" rel="noopener noreferrer">read the article</a></p>
+</header>
+
+<div class="card">
+  <p class="card-title">phase machine</p>
+
+  <!-- Source -->
+  <div class="row">
+    <span class="row-lbl">source →</span>
+    <button class="pill on" id="src-default">default loop</button>
+    <label  class="upload-lbl" id="pm-ul-lbl" for="pm-file">upload file</label>
+    <input  type="file" id="pm-file" accept="audio/*">
+    <button class="pill" id="src-mic">microphone</button>
+    <button class="btn" id="pm-rec" style="display:none;min-width:80px">&#9679;&#xFE0E; record</button>
+    <span   class="rec-state" id="pm-rec-state" style="display:none"></span>
+    <button class="pill" id="pm-rec-new" style="display:none">record new</button>
+  </div>
+
+  <div class="loop-info" id="loop-info">loop: — s</div>
+
+  <!-- Tape display -->
+  <div class="tape-grid">
+    <div class="tape-card">
+      <div class="tape-lbl">tape A</div>
+      <div class="tape-pos" id="pos-a">0.000 s</div>
+      <div class="tape-rate" id="rate-a">rate: 1.000×</div>
+    </div>
+    <div class="tape-card">
+      <div class="tape-lbl">tape B</div>
+      <div class="tape-pos" id="pos-b">0.000 s</div>
+      <div class="tape-rate" id="rate-b">rate: 1.010×</div>
+    </div>
+  </div>
+
+  <!-- Phase bar -->
+  <div class="phase-row">
+    <span class="phase-meta" id="pm-offset">offset: 0.000 s</span>
+    <div class="phase-bar-wrap"><div class="phase-bar-fill" id="pm-bar"></div></div>
+    <span class="phase-meta" id="pm-pct">0%</span>
+  </div>
+
+  <!-- Transport -->
+  <div class="row">
+    <button class="btn" id="pm-play" style="min-width:80px">&#9654;&#xFE0E; play</button>
+    <button class="btn" id="pm-reset" style="min-width:80px">reset</button>
+  </div>
+
+  <!-- Sliders -->
+  <div class="sliders">
+    <div class="ctrl">
+      <input type="range" id="pm-drift" min="0.1" max="5" value="1" step="0.1">
+      <div class="ctrl-bot">
+        <span class="ctrl-lbl">drift rate</span>
+        <span class="ctrl-val" id="pm-drift-val">+1.0%</span>
+      </div>
+    </div>
+    <div class="ctrl">
+      <input type="range" id="pm-vol-a" min="0" max="1" value="0.75" step="0.01">
+      <div class="ctrl-bot">
+        <span class="ctrl-lbl">tape A vol</span>
+        <span class="ctrl-val" id="pm-vol-a-val">75%</span>
+      </div>
+    </div>
+    <div class="ctrl">
+      <input type="range" id="pm-vol-b" min="0" max="1" value="0.75" step="0.01">
+      <div class="ctrl-bot">
+        <span class="ctrl-lbl">tape B vol</span>
+        <span class="ctrl-val" id="pm-vol-b-val">75%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync hold -->
+  <div class="sync-row">
+    <span class="row-lbl">sync hold →</span>
+    <span class="sync-badge" id="sync-badge">K</span>
+    <span class="sync-desc">hold K (or press and hold this button) to run both tapes at the same speed · release to resume drift</span>
+  </div>
+
+  <p class="hint">tape A plays at normal speed · tape B runs slightly faster · hold K to freeze the offset</p>
+</div>
+
+<!-- Instructions -->
+<div class="instructions">
+  <h2>How it works</h2>
+  <p>Two identical copies of the same loop play simultaneously. Tape A runs at normal speed. Tape B runs slightly faster — the percentage set by the drift slider. As they play, the offset between them slowly accumulates. When the offset reaches one full loop length, the tapes are back in unison and the cycle begins again.</p>
+  <p>Use any of the three sources: the built-in default loop (a short rhythmic pattern designed to make phasing effects immediately audible), an uploaded audio file in any browser-supported format, or a microphone recording up to 6 seconds. Spoken syllables, short musical phrases, and rhythmic material all work well.</p>
+
+  <h2>Sync hold</h2>
+  <p>Hold the K key on your keyboard (or press and hold the K button on mobile) to momentarily run both tapes at the same rate. While held, the offset freezes. Release to resume drift from wherever the offset was. This lets you hold any phase relationship you find interesting — a technique from Reich's live performance practice that most digital phase machine implementations omit.</p>
+  <p>The original phasing effect in Reich's tape pieces was an accident: two tape machines running at slightly different motor speeds. The sync hold inverts that — it introduces control into an otherwise automatic process, making the performer an active participant in where the phase sits rather than a passive observer of drift.</p>
+
+  <h2>What to listen for</h2>
+  <p>As the loops drift, the auditory system actively constructs patterns that don't exist in either loop alone. At the mid-phase position (offset ≈ 50% of loop length), the material is most interleaved and the emergent patterns are most complex. Many listeners report unexpected melodies, apparent changes in rhythm, and moments where the two loops seem to merge into a single voice. None of these are present in the source material. They emerge from the relationship between the two signals — and from how the brain organises what it hears.</p>
+
+  <h2>Loop length matters</h2>
+  <p>Shorter loops phase faster and produce more rapid rhythmic changes. Longer loops drift slowly, with transformations taking several minutes to complete. Try the same drift rate with recordings of different lengths to hear how loop duration shapes the experience. A 0.5-second loop at 1% drift completes a full cycle in about 50 seconds. A 4-second loop at the same drift rate takes about 6.5 minutes.</p>
+</div>
+
+<footer>
+  <p>Built with the Web Audio API · open <code>index.html</code> in any modern browser · no installation required</p>
+  <p style="margin-top:0.4rem"><a href="https://www.jordanelias.de/blog/phase-machine/" target="_blank" rel="noopener noreferrer">Read the article</a> · <a href="https://www.jordanelias.de" target="_blank" rel="noopener noreferrer">jordanelias.de</a></p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+
+var audioCtx=null;
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function resumeCtx(){var c=getCtx();if(c.state==='suspended')c.resume();return c;}
+
+var state={buffer:null,playing:false,driftPct:1.0,volA:0.75,volB:0.75,synced:false,startTime:0,offsetA:0,offsetB:0};
+var srcA=null,srcB=null,gainA=null,gainB=null,masterGain=null,dispTimer=null;
+var mediaRec=null,recChunks=[],isRecording=false,hasRec=false;
+
+function rateB(){return state.synced?1.0:1.0+state.driftPct/100;}
+
+function posA(){if(!state.playing||!state.buffer)return 0;var e=getCtx().currentTime-state.startTime,l=state.buffer.duration;return((state.offsetA+e)%l+l)%l;}
+function posB(){if(!state.playing||!state.buffer)return 0;var e=getCtx().currentTime-state.startTime,l=state.buffer.duration;return((state.offsetB+e*rateB())%l+l)%l;}
+
+function startPlay(pA,pB){
+  stopNodes();
+  var ctx=resumeCtx(),now=ctx.currentTime,l=state.buffer.duration;
+  masterGain=ctx.createGain();masterGain.gain.value=1.0;masterGain.connect(ctx.destination);
+  gainA=ctx.createGain();gainA.gain.value=state.volA;gainA.connect(masterGain);
+  gainB=ctx.createGain();gainB.gain.value=state.volB;gainB.connect(masterGain);
+  srcA=ctx.createBufferSource();srcA.buffer=state.buffer;srcA.loop=true;srcA.playbackRate.value=1.0;srcA.connect(gainA);
+  srcB=ctx.createBufferSource();srcB.buffer=state.buffer;srcB.loop=true;srcB.playbackRate.value=rateB();srcB.connect(gainB);
+  var sA=((pA%l)+l)%l,sB=((pB%l)+l)%l;
+  srcA.start(now,sA);srcB.start(now,sB);
+  state.startTime=now;state.offsetA=sA;state.offsetB=sB;
+}
+
+function stopNodes(){
+  if(srcA){try{srcA.stop();}catch(e){}srcA=null;}
+  if(srcB){try{srcB.stop();}catch(e){}srcB=null;}
+  if(gainA){gainA.disconnect();gainA=null;}
+  if(gainB){gainB.disconnect();gainB=null;}
+  if(masterGain){masterGain.disconnect();masterGain=null;}
+}
+
+function togglePlay(){
+  if(!state.buffer)return;
+  if(state.playing){
+    state.playing=false;stopNodes();stopDisp();setPlayBtn(false);
+  } else {
+    state.playing=true;startPlay(0,0);startDisp();setPlayBtn(true);
+  }
+}
+
+function resetMachine(){
+  var was=state.playing;state.playing=false;stopNodes();stopDisp();
+  state.offsetA=0;state.offsetB=0;
+  if(was&&state.buffer){state.playing=true;startPlay(0,0);startDisp();}
+  updateDisp(0,0);setPlayBtn(state.playing);
+}
+
+function setPlayBtn(on){
+  var b=document.getElementById('pm-play');
+  b.innerHTML=on?'&#9632;&#xFE0E; stop':'&#9654;&#xFE0E; play';
+  b.classList.toggle('on',on);
+}
+
+function engageSync(){
+  if(state.synced||!state.playing)return;
+  var pA=posA(),pB=posB();state.synced=true;
+  startPlay(pA,pB);
+  document.getElementById('sync-badge').classList.add('synced');
+}
+
+function releaseSync(){
+  if(!state.synced)return;
+  var pA=posA(),pB=posB();state.synced=false;
+  if(state.playing)startPlay(pA,pB);
+  document.getElementById('sync-badge').classList.remove('synced');
+}
+
+function startDisp(){stopDisp();dispTimer=setInterval(tickDisp,60);}
+function stopDisp(){if(dispTimer){clearInterval(dispTimer);dispTimer=null;}}
+
+function tickDisp(){
+  if(!state.playing||!state.buffer)return;
+  updateDisp(posA(),posB());
+}
+
+function updateDisp(pA,pB){
+  var l=state.buffer?state.buffer.duration:1;
+  var off=((pB-pA)%l+l)%l;
+  var pct=l>0?(off/l)*100:0;
+  document.getElementById('pos-a').textContent=pA.toFixed(3)+' s';
+  document.getElementById('pos-b').textContent=pB.toFixed(3)+' s';
+  document.getElementById('rate-b').textContent='rate: '+rateB().toFixed(3)+'×';
+  document.getElementById('pm-offset').textContent='offset: '+off.toFixed(3)+' s';
+  document.getElementById('pm-bar').style.width=pct.toFixed(1)+'%';
+  document.getElementById('pm-pct').textContent=pct.toFixed(0)+'%';
+}
+
+function normalize(buf){
+  var d=buf.getChannelData(0),peak=0;
+  for(var i=0;i<d.length;i++){var a=Math.abs(d[i]);if(a>peak)peak=a;}
+  if(peak>0.001){var s=0.78/peak;for(var i=0;i<d.length;i++)d[i]*=s;}
+}
+
+function loadBuf(buf){
+  normalize(buf);
+  var was=state.playing;state.playing=false;stopNodes();stopDisp();
+  state.buffer=buf;state.offsetA=0;state.offsetB=0;
+  document.getElementById('pm-play').disabled=false;
+  document.getElementById('loop-info').textContent='loop: '+buf.duration.toFixed(3)+' s';
+  setPlayBtn(false);updateDisp(0,0);
+}
+
+function genDefault(){
+  var ctx=getCtx(),sr=ctx.sampleRate,dur=1.6;
+  var buf=ctx.createBuffer(1,Math.floor(sr*dur),sr),d=buf.getChannelData(0);
+  var pos=[0,Math.floor(sr*0.4),Math.floor(sr*1.0)],el=Math.floor(sr*0.06);
+  pos.forEach(function(p){
+    for(var i=0;i<el&&p+i<d.length;i++){
+      var env=Math.exp(-i/(el*0.25));
+      d[p+i]+=(Math.random()*2-1)*0.5*env+(i<4?0.8:0)*env;
+    }
+  });
+  return buf;
+}
+
+function loadDefault(){
+  setSrcUI('default');loadBuf(genDefault());
+  document.getElementById('loop-info').textContent='loop: 1.600 s (generated)';
+}
+
+function loadFile(file){
+  setSrcUI('file');
+  var r=new FileReader();
+  r.onload=function(e){
+    getCtx().decodeAudioData(e.target.result,function(d){loadBuf(d);},function(){});
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function startRec(){
+  if(isRecording){stopRec();return;}
+  navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream){
+    recChunks=[];mediaRec=new MediaRecorder(stream);
+    mediaRec.ondataavailable=function(e){if(e.data.size>0)recChunks.push(e.data);};
+    mediaRec.onstop=function(){
+      stream.getTracks().forEach(function(t){t.stop();});
+      var blob=new Blob(recChunks,{type:'audio/webm'});
+      var fr=new FileReader();
+      fr.onload=function(ev){
+        getCtx().decodeAudioData(ev.target.result,function(d){
+          isRecording=false;hasRec=true;loadBuf(d);setRecUI('has_rec');
+        },function(){});
+      };
+      fr.readAsArrayBuffer(blob);
+    };
+    mediaRec.start();isRecording=true;setRecUI('rec');
+    setTimeout(function(){if(isRecording)stopRec();},6000);
+  }).catch(function(){});
+}
+
+function stopRec(){if(mediaRec&&isRecording)mediaRec.stop();}
+
+function setRecUI(s){
+  var rb=document.getElementById('pm-rec'),sl=document.getElementById('pm-rec-state'),nb=document.getElementById('pm-rec-new');
+  if(s==='idle'){rb.innerHTML='&#9679;&#xFE0E; record';rb.classList.remove('on');rb.style.display='inline-block';sl.style.display='none';nb.style.display='none';}
+  else if(s==='rec'){rb.innerHTML='&#9632;&#xFE0E; stop';rb.classList.add('on');rb.style.display='inline-block';sl.style.display='none';nb.style.display='none';}
+  else if(s==='has_rec'){rb.style.display='none';sl.textContent='using recording';sl.style.display='inline';nb.style.display='inline-block';}
+}
+
+function setSrcUI(t){
+  document.getElementById('src-default').classList.toggle('on',t==='default');
+  document.getElementById('src-mic').classList.toggle('on',t==='mic');
+  document.getElementById('pm-ul-lbl').classList.toggle('on',t==='file');
+  var sm=t==='mic';
+  document.getElementById('pm-rec').style.display=sm&&!hasRec?'inline-block':'none';
+  document.getElementById('pm-rec-state').style.display=sm&&hasRec?'inline':'none';
+  document.getElementById('pm-rec-new').style.display=sm&&hasRec?'inline-block':'none';
+  if(sm&&!hasRec)setRecUI('idle');
+}
+
+/* Wire up */
+document.getElementById('src-default').addEventListener('click',loadDefault);
+document.getElementById('src-mic').addEventListener('click',function(){
+  hasRec=false;setSrcUI('mic');state.playing=false;stopNodes();stopDisp();
+  state.buffer=null;document.getElementById('pm-play').disabled=true;setRecUI('idle');
+});
+document.getElementById('pm-file').addEventListener('change',function(e){if(e.target.files&&e.target.files[0])loadFile(e.target.files[0]);});
+document.getElementById('pm-rec').addEventListener('click',startRec);
+document.getElementById('pm-rec-new').addEventListener('click',function(){
+  hasRec=false;state.playing=false;stopNodes();stopDisp();state.buffer=null;
+  document.getElementById('pm-play').disabled=true;setRecUI('idle');
+});
+document.getElementById('pm-play').addEventListener('click',togglePlay);
+document.getElementById('pm-reset').addEventListener('click',resetMachine);
+
+document.getElementById('pm-drift').addEventListener('input',function(e){
+  state.driftPct=parseFloat(e.target.value);
+  var lbl='+'+state.driftPct.toFixed(1)+'%';
+  document.getElementById('pm-drift-val').textContent=lbl;
+  document.getElementById('rate-b').textContent='rate: '+rateB().toFixed(3)+'×';
+  if(state.playing&&!state.synced&&srcB)srcB.playbackRate.setValueAtTime(rateB(),getCtx().currentTime);
+});
+document.getElementById('pm-vol-a').addEventListener('input',function(e){
+  state.volA=parseFloat(e.target.value);
+  document.getElementById('pm-vol-a-val').textContent=Math.round(state.volA*100)+'%';
+  if(gainA)gainA.gain.setValueAtTime(state.volA,getCtx().currentTime);
+});
+document.getElementById('pm-vol-b').addEventListener('input',function(e){
+  state.volB=parseFloat(e.target.value);
+  document.getElementById('pm-vol-b-val').textContent=Math.round(state.volB*100)+'%';
+  if(gainB)gainB.gain.setValueAtTime(state.volB,getCtx().currentTime);
+});
+
+document.addEventListener('keydown',function(e){if(!e.repeat&&(e.key==='k'||e.key==='K'))engageSync();});
+document.addEventListener('keyup',function(e){if(e.key==='k'||e.key==='K')releaseSync();});
+
+var badge=document.getElementById('sync-badge');
+badge.addEventListener('touchstart',function(e){e.preventDefault();engageSync();},{passive:false});
+badge.addEventListener('touchend',function(e){e.preventDefault();releaseSync();},{passive:false});
+badge.addEventListener('mousedown',function(){engageSync();});
+badge.addEventListener('mouseup',function(){releaseSync();});
+badge.addEventListener('mouseleave',function(){if(state.synced)releaseSync();});
+
+loadDefault();
+}());
+</script>
+</body>
+</html>
