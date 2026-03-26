@@ -4,7 +4,7 @@ A browser-based phase machine inspired by Steve Reich's tape and process composi
 
 Two identical loops play simultaneously. One runs slightly faster. As they drift apart, the auditory system constructs patterns that don't exist in either loop alone. Hold **K** to freeze the offset and run both tapes at the same speed — a feature from Reich's live performance practice that most digital implementations omit.
 
-→ **[Read the article](https://www.jordanelias.de/blog/phase-machine/)** — the history of *It's Gonna Rain*, what the sync function reveals about process and agency, and the connection between phase music and therapeutic frameworks.
+**[Read the article](https://www.jordanelias.de/blog/phase-machine/)** — the history of *It's Gonna Rain*, what the sync function reveals about process and agency, and the connection between phase music and therapeutic frameworks.
 
 ---
 
