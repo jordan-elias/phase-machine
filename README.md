@@ -40,7 +40,7 @@ open index.html
 ## Sources
 
 - **Default loop**: a short generated rhythmic pattern (1.6 seconds) designed so phasing effects are immediately audible
-- **Upload file**: any audio format the browser supports (MP3, WAV, OGG, etc.)
+- **Upload file**: any audio format the browser supports (MP3, WAV, OGG)
 - **Microphone**: records up to 6 seconds; click the record button, speak or play something, click stop
 
 ---
