@@ -2,21 +2,21 @@
 
 A browser-based phase machine inspired by Steve Reich's tape and process compositions.
 
-Two identical loops play simultaneously. One runs slightly faster. As they drift apart, the auditory system constructs patterns that don't exist in either loop alone. Hold **K** to freeze the offset and run both tapes at the same speed — a feature from Reich's live performance practice that most digital implementations omit.
+Two identical loops play simultaneously. One runs slightly faster. As they drift apart, the auditory system constructs patterns that don't exist in either loop alone. Hold **K** to freeze the offset and run both tapes at the same speed.
 
-**[Read the article](https://www.jordanelias.de/blog/phase-machine/)** — the history of *It's Gonna Rain*, what the sync function reveals about process and agency, and the connection between phase music and therapeutic frameworks.
+**[Read the article](https://www.jordanelias.de/blog/phase-machine/)**: the history of *It's Gonna Rain*, what the sync function reveals about process and agency, and the connection between phase music and therapeutic frameworks.
 
 ---
 
 ## How to use
 
-**Option 1 — use it live**
+**Option 1: use it live**
 The tool is embedded in the article at [jordanelias.de/blog/phase-machine/](https://www.jordanelias.de/blog/phase-machine/).
 
 **Option 2 — download and open locally**
 Download ZIP → unzip → open `index.html` in any modern browser. No internet required after first load (Google Fonts will be absent offline but everything else works).
 
-**Option 3 — clone**
+**Option 3: clone**
 ```bash
 git clone https://github.com/jordan-elias/phase-machine.git
 cd phase-machine
@@ -39,9 +39,9 @@ open index.html
 
 ## Sources
 
-- **Default loop** — a short generated rhythmic pattern (1.6 seconds) designed so phasing effects are immediately audible
-- **Upload file** — any audio format the browser supports (MP3, WAV, OGG, etc.)
-- **Microphone** — records up to 6 seconds; click the record button, speak or play something, click stop
+- **Default loop**: a short generated rhythmic pattern (1.6 seconds) designed so phasing effects are immediately audible
+- **Upload file**: any audio format the browser supports (MP3, WAV, OGG, etc.)
+- **Microphone**: records up to 6 seconds; click the record button, speak or play something, click stop
 
 ---
 
@@ -56,8 +56,8 @@ Reich's phasing began as an artefact of imprecise motor speeds in analogue tape 
 ## What to listen for
 
 As the loops drift:
-- **Canons** form when the offset is short — the later loop echoes the earlier one
-- **Polyrhythm** emerges at mid-phase — the two streams are maximally interleaved
+- **Canons** form when the offset is short, the later loop echoes the earlier one
+- **Polyrhythm** emerges at mid-phase, the two streams are maximally interleaved
 - **Apparent accelerations** arise as the auditory system re-groups the material
 - **Re-unison** occurs when the offset completes a full loop length
 
@@ -77,7 +77,7 @@ These effects are most pronounced with short loops (under 2 seconds) and are cle
 
 ## Technical notes
 
-- Web Audio API — no server, no dependencies
+- Web Audio API: no server, no dependencies
 - Two `AudioBufferSource` nodes with independent `playbackRate` values
 - Sync hold: captures approximate current position of both sources using `AudioContext.currentTime`, stops and restarts both from those positions at rate 1.0, then restores drift on release
 - Position tracking is approximate (derived from elapsed time × rate) because Web Audio's `AudioBufferSourceNode` does not expose a readable playback position
