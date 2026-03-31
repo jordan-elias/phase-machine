@@ -13,7 +13,7 @@ Two identical loops play simultaneously. One runs slightly faster. As they drift
 **Option 1: use it live**
 The tool is embedded in the article at [jordanelias.de/blog/phase-machine/](https://www.jordanelias.de/blog/phase-machine/).
 
-**Option 2 — download and open locally**
+**Option 2: download and open locally**
 Download ZIP > unzip > open `index.html` in any modern browser. No internet required after first load (Google Fonts will be absent offline but everything else should work).
 
 **Option 3: clone**
